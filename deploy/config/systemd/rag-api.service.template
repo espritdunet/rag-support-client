@@ -1,0 +1,77 @@
+"""
+Systemd service configuration for RAG Support Client API
+Includes security hardening, resource limits and restart policies.
+
+Author: Oliver Marshall
+Date: December 15, 2024
+"""
+
+[Unit]
+Description=RAG Support Client API Service
+Documentation=https://github.com/espritdunet/rag-support-client
+After=network.target network-online.target
+Requires=network-online.target
+# If using remote Ollama, remove the following line
+After=ollama.service
+Requires=ollama.service
+
+[Service]
+# Service execution
+Type=notify
+User=${RAG_USER}
+Group=${RAG_GROUP}
+WorkingDirectory=${INSTALL_BASE}/current
+Environment="PATH=${INSTALL_BASE}/current/.venv/bin"
+EnvironmentFile=${CONFIG_BASE}/.env
+ExecStart=${INSTALL_BASE}/current/.venv/bin/uvicorn rag_support_client.api.main:app --host ${API_HOST} --port ${API_PORT} --workers 4 --log-level info
+
+# Restart configuration
+Restart=always
+RestartSec=5
+StartLimitInterval=0
+StartLimitBurst=5
+
+# Resource management
+CPUQuota=200%
+CPUWeight=90
+MemoryLimit=4G
+TasksMax=4096
+LimitNOFILE=65535
+LimitNPROC=4096
+IOWeight=90
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=full
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+CapabilityBoundingSet=
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallErrorNumber=EPERM
+
+# Logging
+StandardOutput=append:${LOG_BASE}/api.log
+StandardError=append:${LOG_BASE}/api.error.log
+SyslogIdentifier=rag-api
+
+# Performance tuning
+Nice=-5
+IOSchedulingClass=best-effort
+IOSchedulingPriority=0
+
+# Watchdog configuration
+WatchdogSec=30s
+TimeoutStartSec=30s
+TimeoutStopSec=30s
+
+[Install]
+WantedBy=multi-user.target
