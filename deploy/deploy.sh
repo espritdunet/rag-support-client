@@ -61,9 +61,9 @@ chown -R rag:rag /opt/rag-support
 
 # Application installation
 echo "Installing RAG Support Client..."
-cd /opt/rag-support
-git clone https://github.com/your-repo/rag-support-client.git current
-cd current
+echo "Copying application files..."
+cp -r $(dirname "$(dirname "$(readlink -f "$0")")") /opt/rag-support/current
+cd /opt/rag-support/current
 python3.11 -m venv .venv
 .venv/bin/pip install -e '.[dev]'
 
