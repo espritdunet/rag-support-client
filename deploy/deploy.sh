@@ -128,6 +128,9 @@ EOL
 
 # Nginx configuration
 echo "Configuring nginx..."
+cat > /etc/nginx/conf.d/rate-limiting.conf << EOL
+limit_req_zone \$binary_remote_addr zone=api:10m rate=10r/s;
+EOL
 cat > /etc/nginx/sites-available/rag-support << EOL
 server {
     listen 80;
@@ -148,9 +151,8 @@ server {
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto \$scheme;
 
-        # Rate limiting
+        # Rate limiting (using pre-defined zone)
         limit_req zone=api burst=10 nodelay;
-        limit_req_zone \$binary_remote_addr zone=api:10m rate=10r/s;
     }
 
     # Streamlit UI configuration
