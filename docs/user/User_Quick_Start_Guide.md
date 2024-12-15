@@ -227,7 +227,6 @@ A: No, questions should be plain text. The system will format responses appropri
 
 ## Support Resources
 
-- GitHub Issues: [Project Repository]
-- Documentation: [ReadTheDocs]
-- Community: [Discord Channel]
-- Email: support@example.com
+- GitHub Issues: [Issue Tracker](https://github.com/espritdunet/rag-support-client/issues)
+# - Documentation: [ReadTheDocs] - Not yet ¯\_(ツ)_/¯
+# - Community: [Discord Channel] - Not yet ¯\_(ツ)_/¯

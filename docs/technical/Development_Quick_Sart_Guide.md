@@ -26,7 +26,7 @@ A comprehensive guide for developers working on the RAG Support Client project.
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/yourusername/rag-support-client
+   git clone https://github.com/espritdunet/rag-support-client
    cd rag-support-client
    ```
 
@@ -331,6 +331,6 @@ Follow conventional commits:
 
 ## Resources
 
-- [Project Repository](https://github.com/yourusername/rag-support-client)
-- [Documentation](https://rag-support-client.readthedocs.io/)
-- [Issue Tracker](https://github.com/yourusername/rag-support-client/issues)
+- [Project Repository](https://github.com/espritdunet/rag-support-client)
+# - [Documentation](https://rag-support-client.readthedocs.io/) - Not yet ¯\_(ツ)_/¯
+- [Issue Tracker](https://github.com/espritdunet/rag-support-client/issues)

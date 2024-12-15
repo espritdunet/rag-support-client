@@ -162,7 +162,7 @@ ignore_missing_imports = true
 
 # Project URLs
 [project.urls]
-"Homepage" = "https://github.com/yourusername/rag-support-client"
-"Bug Tracker" = "https://github.com/yourusername/rag-support-client/issues"
-"Documentation" = "https://rag-support-client.readthedocs.io/"
-"Source Code" = "https://github.com/yourusername/rag-support-client"
+"Homepage" = "https://github.com/espritdunet/rag-support-client"
+"Bug Tracker" = "https://github.com/espritdunet/rag-support-client/issues"
+# "Documentation" = "https://rag-support-client.readthedocs.io/"
+"Source Code" = "https://github.com/espritdunet/rag-support-client"
