@@ -1,0 +1,168 @@
+[build-system]
+# Basic build requirements
+requires = ["setuptools>=64.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rag-support-client"
+version = "0.1.0"
+description = "RAG Support Client using LangChain"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [
+    { name = "Oliver Marshall", email = "cuichettes_ravioli0o@icloud.com" },
+]
+maintainers = [
+    { name = "Oliver Marshall", email = "cuichettes_ravioli0o@icloud.com" },
+]
+keywords = ["rag", "langchain", "llm", "support", "Ollama", "ChromaDB"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+# Production dependencies
+dependencies = [
+    # NumPy is the fundamental package for scientific computing with Python.
+    "numpy==1.26.4",
+    # Core LangChain components - Fixed versions for stability
+    "langchain==0.3.9",
+    "langchain-community==0.3.9",
+    "langchain-core==0.3.21",
+    "langchain-text-splitters==0.3.2",
+    "langchain-unstructured==0.1.6",
+    "langchain-ollama==0.2.1",
+    "langchain-chroma==0.1.4",
+    "chromadb==0.5.16",
+    # Web framework and server - Minimum versions for security updates
+    "fastapi>=0.115.4",
+    "uvicorn>=0.32.0",
+    # Data validation and settings - Fixed versions for structural components
+    "pydantic==2.9.2",
+    "pydantic-settings==2.6.1",
+    # Utilities - Minimum versions for stable components
+    "python-dotenv>=1.0.1",
+    # Markdown processing
+    "markdown2>=2.4.10",
+    "beautifulsoup4>=4.12.2",
+    "jinja2>=3.1.4",
+    # UI components - Minimum versions for feature updates
+    "streamlit>=1.4.0",
+    "streamlit-chat>=0.1.1",
+    "httpx>=0.27.2",
+    "psutil>=6.1.0",
+    "watchdog>=3.0.0",
+]
+
+# Optional dependency groups
+[project.optional-dependencies]
+# Development tools and testing
+dev = [
+    "pip>=24.3.1",
+    "pytest>=8.3.3",
+    "pytest-asyncio>=0.24.0",
+    "pytest-cov>=6.0.0",
+    "pytest-xdist>=3.5.0",
+    "black>=24.2.0",
+    "isort>=5.13.2",
+    "mypy>=1.8.0",
+    "ruff>=0.3.0",
+]
+
+# Documentation generation
+docs = [
+    "sphinx>=7.2.0",
+    "sphinx-rtd-theme>=2.0.0",
+    "myst-parser>=2.0.0"
+]
+
+# Package configuration
+[tool.setuptools]
+package-dir = { "" = "src" }
+include-package-data = true
+
+# Package data configuration
+[tool.setuptools.package-data]
+"rag_support_client.streamlit" = ["pages/*.py", "components/*.py", "utils/*.py"]
+"*" = ["py.typed"]
+
+# Package discovery
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["rag_support_client*"]
+exclude = ["tests*"]
+
+# Entry points
+[project.scripts]
+rag-support = "rag_support_client.streamlit:run_app"
+
+# Testing configuration
+[tool.pytest.ini_options]
+minversion = "8.3"
+addopts = "-ra -q --cov=src"
+testpaths = ["tests"]
+pythonpath = ["src"]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::UserWarning"
+]
+
+# Code formatting configuration
+[tool.black]
+line-length = 88
+target-version = ['py311']
+include = '\.pyi?$'
+extend-exclude = '''
+# A regex preceded with ^/ will apply only to files and directories
+# in the root of the project.
+^/docs
+'''
+
+# Import sorting configuration
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line-length = 88
+known_first_party = ["rag_support_client"]
+
+# Linting configuration
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+select = [
+    "E",  # pycodestyle
+    "F",  # pyflakes
+    "B",  # flake8-bugbear
+    "UP", # pyupgrade
+    "I",  # isort
+]
+ignore = []
+
+# Type checking configuration
+[tool.mypy]
+python_version = "3.11"
+plugins = ["pydantic.mypy"]
+follow_imports = "silent"
+warn_redundant_casts = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+check_untyped_defs = true
+show_error_codes = true
+ignore_missing_imports = true
+mypy_path = ["src/rag_support_client/streamlit-stubs"]
+
+[[tool.mypy.overrides]]
+module = ["streamlit.*", "st"]
+ignore_missing_imports = true
+
+# Project URLs
+[project.urls]
+"Homepage" = "https://github.com/yourusername/rag-support-client"
+"Bug Tracker" = "https://github.com/yourusername/rag-support-client/issues"
+"Documentation" = "https://rag-support-client.readthedocs.io/"
+"Source Code" = "https://github.com/yourusername/rag-support-client"

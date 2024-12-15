@@ -1,0 +1,78 @@
+# Environment files
+.env
+.env.*
+!config/default.env
+
+# Diskcache files
+*.cache.db
+*.cache.db-shm
+*.cache.db-wal
+data/cache/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# IDE
+.vscode/
+!.vscode/settings.json
+!.vscode/launch.json
+
+# Project specific
+data/backup/*
+data/processed/*
+data/raw/*
+data/vector_store/*
+logs/*.log
+config_export.json
+
+# OS specific
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pytest
+.pytest_cache/
+
+# Coverage
+coverage.xml
+.coverage
+coverage/
+htmlcov/
+
+# Deployment specific
+deploy/config/local_settings.sh
+deploy/logs/*
+deploy/*.log
+deploy/test/results/*
+
+# Temp files
+*.swp
+*.swo
+*~
+
