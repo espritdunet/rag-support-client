@@ -65,7 +65,13 @@ echo "Copying application files..."
 cp -r $(dirname "$(dirname "$(readlink -f "$0")")") /opt/rag-support/current
 cd /opt/rag-support/current
 python3.11 -m venv .venv
-.venv/bin/pip install -e '.[dev]'
+.venv/bin/pip install --upgrade pip
+.venv/bin/pip install .
+
+# Set correct permissions
+echo "Setting correct permissions..."
+chown -R rag:rag /opt/rag-support
+chmod -R 755 /opt/rag-support/current
 
 # Environment configuration
 echo "Configuring environment..."
@@ -78,7 +84,7 @@ STREAMLIT_PORT=8501
 DATA_PATH=/opt/rag-support/data
 EOL
 
-# Systemd services setup
+## Systemd services setup
 echo "Setting up systemd services..."
 cat > /etc/systemd/system/rag-api.service << EOL
 [Unit]
@@ -89,8 +95,9 @@ User=rag
 Group=rag
 WorkingDirectory=/opt/rag-support/current
 Environment="PATH=/opt/rag-support/current/.venv/bin"
+Environment="PYTHONPATH=/opt/rag-support/current"
 EnvironmentFile=/opt/rag-support/config/.env
-ExecStart=/opt/rag-support/current/.venv/bin/uvicorn rag_support_client.api.main:app --host \${API_HOST} --port \${API_PORT}
+ExecStart=/opt/rag-support/current/.venv/bin/uvicorn src.rag_support_client.api.main:app --host \${API_HOST} --port \${API_PORT}
 Restart=always
 # Security
 PrivateTmp=true
@@ -112,8 +119,9 @@ User=rag
 Group=rag
 WorkingDirectory=/opt/rag-support/current
 Environment="PATH=/opt/rag-support/current/.venv/bin"
+Environment="PYTHONPATH=/opt/rag-support/current"
 EnvironmentFile=/opt/rag-support/config/.env
-ExecStart=/opt/rag-support/current/.venv/bin/streamlit run rag_support_client/streamlit/app.py --server.port \${STREAMLIT_PORT} --server.address \${STREAMLIT_HOST}
+ExecStart=/opt/rag-support/current/.venv/bin/streamlit run src/rag_support_client/streamlit/pages/1_🏠_Home.py --server.port \${STREAMLIT_PORT} --server.address \${STREAMLIT_HOST}
 Restart=always
 # Security
 PrivateTmp=true
