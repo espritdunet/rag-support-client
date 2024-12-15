@@ -128,9 +128,50 @@ EOL
 
 # Nginx configuration
 echo "Configuring nginx..."
-cat > /etc/nginx/conf.d/rate-limiting.conf << EOL
-limit_req_zone \$binary_remote_addr zone=api:10m rate=10r/s;
+
+# Backup original nginx.conf
+cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.backup
+
+# Create a new nginx.conf with rate limiting in http context
+cat > /etc/nginx/nginx.conf << EOL
+user www-data;
+worker_processes auto;
+pid /run/nginx.pid;
+include /etc/nginx/modules-enabled/*.conf;
+
+events {
+    worker_connections 768;
+}
+
+http {
+    # Rate limiting configuration
+    limit_req_zone \$binary_remote_addr zone=api:10m rate=10r/s;
+
+    # Basic settings
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    keepalive_timeout 65;
+    types_hash_max_size 2048;
+
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    # SSL Settings
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers on;
+
+    # Logging Settings
+    access_log /var/log/nginx/access.log;
+    error_log /var/log/nginx/error.log;
+
+    # Virtual Host Configs
+    include /etc/nginx/conf.d/*.conf;
+    include /etc/nginx/sites-enabled/*;
+}
 EOL
+
+# Site configuration
 cat > /etc/nginx/sites-available/rag-support << EOL
 server {
     listen 80;
@@ -173,8 +214,10 @@ server {
 }
 EOL
 
-ln -sf /etc/nginx/sites-available/rag-support /etc/nginx/sites-enabled/
+# Remove default site and create symlink
 rm -f /etc/nginx/sites-enabled/default
+ln -sf /etc/nginx/sites-available/rag-support /etc/nginx/sites-enabled/
+
 
 # SSL setup if requested
 if [ "$SSL_ENABLE" = "y" ]; then
