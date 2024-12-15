@@ -254,5 +254,5 @@ Installation Details:
 - Logs path: /opt/rag-support/logs
 
 For more information:
-https://github.com/your-repo/rag-support-client
+https://github.com/netspirit/rag-support-client
 "
