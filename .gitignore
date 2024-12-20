@@ -44,7 +44,7 @@ data/backup/*
 data/processed/*
 data/raw/*
 data/vector_store/*
-logs/*.log
+logs/*
 config_export.json
 
 # OS specific
