@@ -18,10 +18,14 @@ echo "RAG Support Client - Installation"
 echo "--------------------------------"
 
 # Essential information gathering
-read -p "Domain name (e.g., rag.example.com): " DOMAIN
-read -p "Install Ollama locally? (y/n): " OLLAMA_LOCAL
+read -p "Domain name (e.g., rag.example.com or IP address for testing): " DOMAIN
+read -p "Install Ollama locally on the same Debian server? (y/n): " OLLAMA_LOCAL
 if [ "$OLLAMA_LOCAL" != "y" ]; then
-    read -p "Remote Ollama URL: " OLLAMA_URL
+    read -p "Remote Ollama URL (format: http://IP:11434): " OLLAMA_URL
+    # Validate URL format and add http:// if missing
+    if [[ ! $OLLAMA_URL =~ ^https?:// ]]; then
+        OLLAMA_URL="http://$OLLAMA_URL"
+    fi
 fi
 read -p "Enable HTTPS/SSL? (y/n): " SSL_ENABLE
 
