@@ -68,6 +68,9 @@ python3.11 -m venv .venv
 .venv/bin/pip install --upgrade pip
 .venv/bin/pip install .
 
+# Copy main.py from current directory to api directory
+cp /opt/rag-support/current/main.py /opt/rag-support/current/src/rag_support_client/api/
+
 # Set correct permissions
 echo "Setting correct permissions..."
 chown -R rag:rag /opt/rag-support
@@ -97,7 +100,7 @@ WorkingDirectory=/opt/rag-support/current
 Environment="PATH=/opt/rag-support/current/.venv/bin"
 Environment="PYTHONPATH=/opt/rag-support/current"
 EnvironmentFile=/opt/rag-support/config/.env
-ExecStart=/opt/rag-support/current/.venv/bin/uvicorn src.rag_support_client.api.main:app --host \${API_HOST} --port \${API_PORT}
+ExecStart=/opt/rag-support/current/.venv/bin/uvicorn main:app --host \${API_HOST} --port \${API_PORT}
 Restart=always
 # Security
 PrivateTmp=true
