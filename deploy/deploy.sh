@@ -18,7 +18,7 @@ echo "RAG Support Client - Installation"
 echo "--------------------------------"
 
 # Essential information gathering
-read -p "Domain name (e.g., rag.example.com or IP address for testing): " DOMAIN
+read -p "Domain name (e.g., rag.example.com or your Debian Server IP address for testing): " DOMAIN
 read -p "Install Ollama locally on the same Debian server? (y/n): " OLLAMA_LOCAL
 if [ "$OLLAMA_LOCAL" != "y" ]; then
     read -p "Remote Ollama URL (format: http://IP:11434): " OLLAMA_URL
@@ -102,53 +102,133 @@ read -p ""
 
 ## Systemd services setup
 echo "Setting up systemd services..."
+
 cat > /etc/systemd/system/rag-api.service << EOL
 [Unit]
-Description=RAG Support Client API
-After=network.target
+Description=RAG Support Client API Service
+Documentation=https://github.com/espritdunet/rag-support-client
+After=network.target network-online.target
+Requires=network-online.target
+
 [Service]
+Type=notify
 User=rag
 Group=rag
 WorkingDirectory=/opt/rag-support/current
 Environment="PATH=/opt/rag-support/current/.venv/bin"
 Environment="PYTHONPATH=/opt/rag-support/current"
 EnvironmentFile=/opt/rag-support/config/.env
-ExecStart=/opt/rag-support/current/.venv/bin/uvicorn main:app --host \${API_HOST} --port \${API_PORT}
+ExecStart=/opt/rag-support/current/.venv/bin/uvicorn rag_support_client.api.main:app --host \${API_HOST} --port \${API_PORT} --workers 4 --log-level info
+
+# Restart configuration
 Restart=always
-# Security
-PrivateTmp=true
-ProtectSystem=full
-NoNewPrivileges=true
-# Resource limits
+RestartSec=5
+StartLimitInterval=0
+StartLimitBurst=5
+
+# Resource management
+CPUQuota=200%
+CPUWeight=90
+MemoryMax=4G
+TasksMax=4096
 LimitNOFILE=65535
-MemoryLimit=2G
+LimitNPROC=4096
+IOWeight=90
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=full
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+CapabilityBoundingSet=
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallErrorNumber=EPERM
+
+# Logging
+StandardOutput=append:/opt/rag-support/logs/api.log
+StandardError=append:/opt/rag-support/logs/api.error.log
+SyslogIdentifier=rag-api
+
 [Install]
 WantedBy=multi-user.target
 EOL
 
 cat > /etc/systemd/system/rag-ui.service << EOL
 [Unit]
-Description=RAG Support Client UI
-After=network.target rag-api.service
+Description=RAG Support Client Streamlit UI Service
+Documentation=https://github.com/espritdunet/rag-support-client
+After=network.target network-online.target rag-api.service
+Requires=network-online.target rag-api.service
+
 [Service]
+Type=simple
 User=rag
 Group=rag
 WorkingDirectory=/opt/rag-support/current
 Environment="PATH=/opt/rag-support/current/.venv/bin"
 Environment="PYTHONPATH=/opt/rag-support/current"
 EnvironmentFile=/opt/rag-support/config/.env
-ExecStart=/opt/rag-support/current/.venv/bin/streamlit run src/rag_support_client/streamlit/pages/1_🏠_Home.py --server.port \${STREAMLIT_PORT} --server.address \${STREAMLIT_HOST}
+ExecStart=/opt/rag-support/current/.venv/bin/streamlit run rag_support_client/streamlit/app.py \
+    --server.port \${STREAMLIT_PORT} \
+    --server.address \${STREAMLIT_HOST} \
+    --server.maxUploadSize 5 \
+    --server.maxMessageSize 200 \
+    --server.enableXsrfProtection true \
+    --server.enableCORS false \
+    --browser.serverAddress \${DOMAIN} \
+    --browser.gatherUsageStats false \
+    --logger.level info \
+    --theme.base light
+
+# Restart configuration
 Restart=always
-# Security
-PrivateTmp=true
-ProtectSystem=full
+RestartSec=5
+StartLimitInterval=0
+StartLimitBurst=5
+
+# Resource management
+CPUQuota=100%
+CPUWeight=80
+MemoryMax=2G
+TasksMax=2048
+LimitNOFILE=32768
+LimitNPROC=2048
+IOWeight=80
+
+# Security hardening
 NoNewPrivileges=true
-# Resource limits
-LimitNOFILE=65535
-MemoryLimit=2G
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=full
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+CapabilityBoundingSet=
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallErrorNumber=EPERM
+
+# Logging
+StandardOutput=append:/opt/rag-support/logs/ui.log
+StandardError=append:/opt/rag-support/logs/ui.error.log
+SyslogIdentifier=rag-ui
+
 [Install]
 WantedBy=multi-user.target
-Environment="STREAMLIT_BROWSER_GATHER_USAGE_STATS=false"
 EOL
 
 # Nginx configuration
