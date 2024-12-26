@@ -86,10 +86,19 @@ cat > /opt/rag-support/config/.env << EOL
 OLLAMA_BASE_URL=${OLLAMA_URL}
 API_HOST=127.0.0.1
 API_PORT=8000
-STREAMLIT_HOST=127.0.0.1
+STREAMLIT_HOST=0.0.0.0
 STREAMLIT_PORT=8501
 DATA_PATH=/opt/rag-support/data
 EOL
+echo "
+Important: Please configure your environment variables:
+1. Edit /opt/rag-support/config/.env
+2. Set required variables from .env.example
+3. Then restart services with:
+   sudo systemctl restart rag-api rag-ui
+
+Press Enter to continue..."
+read -p ""
 
 ## Systemd services setup
 echo "Setting up systemd services..."
@@ -139,6 +148,7 @@ LimitNOFILE=65535
 MemoryLimit=2G
 [Install]
 WantedBy=multi-user.target
+Environment="STREAMLIT_BROWSER_GATHER_USAGE_STATS=false"
 EOL
 
 # Nginx configuration
