@@ -82,7 +82,7 @@ chmod -R 755 /opt/rag-support/current
 
 # Environment configuration
 echo "Configuring environment..."
-cat > /opt/rag-support/config/.env << EOL
+cat > /opt/rag-support/config/.env << 'EOL'
 OLLAMA_BASE_URL=${OLLAMA_URL}
 API_HOST=127.0.0.1
 API_PORT=8000
@@ -95,7 +95,7 @@ Important: Please configure your environment variables:
 1. Edit /opt/rag-support/config/.env
 2. Set required variables from .env.example
 3. Then restart services with:
-   sudo systemctl restart rag-api rag-ui
+sudo systemctl restart rag-api rag-ui
 
 Press Enter to continue..."
 read -p ""
@@ -103,7 +103,7 @@ read -p ""
 ## Systemd services setup
 echo "Setting up systemd services..."
 
-cat > /etc/systemd/system/rag-api.service << EOL
+cat > /etc/systemd/system/rag-api.service << 'EOL'
 [Unit]
 Description=RAG Support Client API Service
 Documentation=https://github.com/espritdunet/rag-support-client
@@ -162,7 +162,7 @@ SyslogIdentifier=rag-api
 WantedBy=multi-user.target
 EOL
 
-cat > /etc/systemd/system/rag-ui.service << EOL
+cat > /etc/systemd/system/rag-ui.service << 'EOL'
 [Unit]
 Description=RAG Support Client Streamlit UI Service
 Documentation=https://github.com/espritdunet/rag-support-client
@@ -176,6 +176,7 @@ Group=rag
 WorkingDirectory=/opt/rag-support/current
 Environment="PATH=/opt/rag-support/current/.venv/bin"
 Environment="PYTHONPATH=/opt/rag-support/current"
+Environment="STREAMLIT_BROWSER_GATHER_USAGE_STATS=false"
 EnvironmentFile=/opt/rag-support/config/.env
 ExecStart=/opt/rag-support/current/.venv/bin/streamlit run rag_support_client/streamlit/app.py \
     --server.port \${STREAMLIT_PORT} \
@@ -238,7 +239,7 @@ echo "Configuring nginx..."
 cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.backup
 
 # Create a new nginx.conf with rate limiting in http context
-cat > /etc/nginx/nginx.conf << EOL
+cat > /etc/nginx/nginx.conf << 'EOL'
 user www-data;
 worker_processes auto;
 pid /run/nginx.pid;
@@ -277,7 +278,7 @@ http {
 EOL
 
 # Site configuration
-cat > /etc/nginx/sites-available/rag-support << EOL
+cat > /etc/nginx/sites-available/rag-support << 'EOL'
 server {
     listen 80;
     server_name ${DOMAIN};

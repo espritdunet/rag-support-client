@@ -34,7 +34,7 @@ StartLimitBurst=5
 # Resource management
 CPUQuota=200%
 CPUWeight=90
-MemoryLimit=4G
+MemoryMax=4G
 TasksMax=4096
 LimitNOFILE=65535
 LimitNPROC=4096

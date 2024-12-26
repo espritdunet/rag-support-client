@@ -23,6 +23,7 @@ Group=${RAG_GROUP}
 WorkingDirectory=${INSTALL_BASE}/current
 Environment="PATH=${INSTALL_BASE}/current/.venv/bin"
 EnvironmentFile=${CONFIG_BASE}/.env
+Environment="STREAMLIT_BROWSER_GATHER_USAGE_STATS=false"
 ExecStart=${INSTALL_BASE}/current/.venv/bin/streamlit run rag_support_client/streamlit/app.py \
     --server.port ${STREAMLIT_PORT} \
     --server.address ${STREAMLIT_HOST} \
@@ -44,7 +45,7 @@ StartLimitBurst=5
 # Resource management
 CPUQuota=100%
 CPUWeight=80
-MemoryLimit=2G
+MemoryMax=2G
 TasksMax=2048
 LimitNOFILE=32768
 LimitNPROC=2048
