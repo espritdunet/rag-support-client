@@ -1,0 +1,122 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Virtual Environment
+.env
+.venv
+env/
+venv/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*.swn
+*.bak
+
+# RAG Specific
+vector_store/
+chroma/
+chromadb/
+embeddings/
+models/
+processed_docs/
+raw_docs/
+backups/
+
+# Data and Logs
+data/*
+!data/.gitkeep
+logs/*
+!logs/.gitkeep
+*.log
+*.log.*
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Documentation
+docs/
+*.md
+!README.md
+!CHANGELOG.md
+!LICENSE.md
+
+# Development
+tests/
+test/
+testing/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.db
+*.sqlite
+*.sqlite3
+
+# OS specific
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Security
+*.pem
+*.key
+*.cert
+*.crt
+*.p12
+*.pfx
+*.env*
+!.env.example
+secrets/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+.hypothesis/
+
+# Local development
+local/
+dev/
+development/
+*.local

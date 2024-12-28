@@ -1,0 +1,51 @@
+services:
+  ollama:
+    image: ollama/ollama:0.5.4
+    container_name: rag-support-ollama
+    volumes:
+      - ollama_data:/root/.ollama
+    ports:
+      - "11434:11434"
+    networks:
+      - rag-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  rag-support:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rag-support-app
+    depends_on:
+      ollama:
+        condition: service_healthy
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - ENV=production
+      - DEBUG=false
+      - LOG_LEVEL=INFO
+      - HOST=0.0.0.0
+      - WAIT_FOR_OLLAMA=true
+    volumes:
+      # Bind mounts for data persistence
+      - ./data:/app/data:rw  # Mount local data directory
+      - ./logs:/app/logs:rw  # Mount local logs directory
+      - ./.env:/app/.env:ro  # Mount .env file as read-only
+    ports:
+      - "8000:8000"  # FastAPI
+      - "8501:8501"  # Streamlit
+    networks:
+      - rag-network
+    restart: unless-stopped
+
+volumes:
+  ollama_data:
+    name: rag-support-ollama-data
+
+networks:
+  rag-network:
+    name: rag-support-network
+    driver: bridge

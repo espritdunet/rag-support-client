@@ -1,0 +1,28 @@
+services:
+  rag-support:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rag-support-app
+    environment:
+      - ENV=production
+      - DEBUG=false
+      - LOG_LEVEL=INFO
+      - HOST=0.0.0.0
+      # OLLAMA_BASE_URL must be provided in .env file
+    volumes:
+      # Bind mounts for data persistence
+      - ./data:/app/data:rw  # Mount local data directory
+      - ./logs:/app/logs:rw  # Mount local logs directory
+      - ./.env:/app/.env:ro  # Mount .env file as read-only
+    ports:
+      - "8000:8000"  # FastAPI
+      - "8501:8501"  # Streamlit
+    networks:
+      - rag-network
+    restart: unless-stopped
+
+networks:
+  rag-network:
+    name: rag-support-network
+    driver: bridge

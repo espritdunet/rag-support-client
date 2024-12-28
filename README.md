@@ -7,6 +7,12 @@ A powerful Retrieval-Augmented Generation (RAG) support client that provides con
 
 ![Python](https://img.shields.io/badge/python-3.11-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
+![Docker](https://img.shields.io/badge/docker-supported-blue.svg)
+![LangChain](https://img.shields.io/badge/langchain-0.3-orange.svg)
+![Ollama](https://img.shields.io/badge/ollama-0.5.4-purple.svg)
+![ChromaDB](https://img.shields.io/badge/chromadb-0.5.16-yellow.svg)
+![FastAPI](https://img.shields.io/badge/fastapi-0.115.4-teal.svg)
+![Streamlit](https://img.shields.io/badge/streamlit-1.4-red.svg)
 
 ## Project Goals
 
@@ -25,53 +31,187 @@ A powerful Retrieval-Augmented Generation (RAG) support client that provides con
 - 🎯 High-precision response generation
 - 📊 Administrative interface for document management
 
-## Quick Start
+## Architecture
 
-1. **Prerequisites**
-   - Python 3.11 or higher
-   - [Ollama](https://ollama.ai/) installed and running
-   - [ChromaDB](https://www.trychroma.com/) prerequisites
+The application follows a modular architecture with these key components:
 
-2. **Installation**
+- **RAG Chain**: Central component handling document retrieval and response generation
+- **Document Processing**: Intelligent Markdown processing with metadata extraction
+- **Vector Store**: ChromaDB-based similarity search
+- **LLM Integration**: Local deployment using Ollama
+- **Dual Interface**: FastAPI backend for remote API client as a ChatBot and a Streamlit UI for local testing
+
+## Deployment Options
+
+### Prerequisites
+
+#### For Production Deployment
+
+- Docker and Docker Compose
+- 8GB RAM minimum (16GB recommended)
+- 4 CPU cores minimum
+- 20GB free disk space (more depending on your data volume)
+- Linux server (recommended) or Windows/macOS with Docker support
+
+#### For Development
+
+- Python 3.11 or higher
+- Git
+- Visual Studio Code (recommended)
+- [Ollama](https://ollama.ai/) installed locally
+- [ChromaDB](https://www.trychroma.com/) prerequisites
+
+### Option 1: Docker Deployment (with Ollama)
+
+This option deploys both the RAG Support Client and Ollama in Docker containers:
+
+01. Clone the repository:
 
    ```bash
-   python -m venv .venv
-   source .venv/bin/activate  # or `.venv\Scripts\activate` on Windows
-   pip install -e '.[dev]'
+   git clone https://github.com/espritdunet/rag-support-client.git
+   cd rag-support-client
+   ```
 
-3. **Configuration**
+02. Configure your environment:
 
     ```bash
-    #Edit .env file with your settings
     cp .env.example .env
+    # Edit .env file with your settings
     ```
 
-4. **Run the Application**
+03. Start the services:
 
     ```bash
-    # Start the FastAPI server
+    docker compose up -d
+    ```
+
+04. Access the applications:
+    FastAPI Documentation: <http://your-server:8000/docs>
+    Streamlit UI: <http://your-server:8501>
+
+### Option 2: Docker with External Ollama
+
+Use this option if you have Ollama running on a separate server:
+
+01. Follow steps 1-2 from Option 1
+02. Edit .env and set OLLAMA_BASE_URL to your Ollama server
+03. Start the service:
+
+    ```bash
+    docker compose -f docker-compose.external-ollama.yml up -d
+    ````
+
+### Option 3: Development Setup
+
+01. Create virtual environment:
+
+    ```bash
+    python -m venv .venv
+    source .venv/bin/activate  # or `.venv\Scripts\activate` on Windows
+    ```
+
+02. Install dependencies:
+
+    ```bash
+    pip install -e '.[dev]'
+    ```
+
+03. Configure environment:
+
+    ```bash
+    cp .env.example .env
+    # Edit .env with your settings
+    ```
+
+04. Run the applications:
+
+    ```bash
+    # Start FastAPI server
     python main.py
 
-    # Start the Streamlit UI (in a new terminal)
+    # Start Streamlit UI (new terminal)
     streamlit run streamlit_app.py
     ```
 
-5. **Documentation**
-    User Quick Start Guide
-    Development Guide
-    Technical Documentation
+## Data Persistence
 
-6. **Architecture**
-    The application follows a modular architecture with these key components:
+### Docker Volumes
 
-    RAG Chain: Central component handling document retrieval and response generation
-    Document Processing: Intelligent Markdown processing with metadata extraction
-    Vector Store: ChromaDB-based similarity search
-    LLM Integration: Local deployment using Ollama
-    Dual Interface: FastAPI backend for remote API client as a ChatBot and a Streamlit UI for local testing
+/var/lib/rag-support/data: Source documents and processed files
+/var/lib/rag-support/vector_store: ChromaDB vector database
+/var/log/rag-support: Application logs
 
-7. **Contributing**
-    Contributions are welcome! Please read our Contributing Guidelines before submitting pull requests.
+### Backup and Restore
 
-8. **License**
-    This project is licensed under the MIT License - see the LICENSE file for details.
+    ```bash
+    # Backup
+    docker run --rm -v rag-support-vector-store:/source -v $(pwd)/backups:/backup \
+    ubuntu tar czf /backup/vector-store-$(date +%Y%m%d).tar.gz /source
+
+    # Restore
+    docker run --rm -v rag-support-vector-store:/target -v $(pwd)/backups:/backup \
+    ubuntu tar xzf /backup/vector-store-20240101.tar.gz -C /target --strip-components=1
+    ```
+
+## Maintenance
+
+### Updating the Application
+
+    ```bash
+    # Pull latest changes
+        git pull
+
+    # Rebuild and restart
+    docker compose down
+    docker compose build --no-cache
+    docker compose up -d
+    ```
+
+### Monitoring
+
+    ```bash
+    # View logs
+    docker compose logs -f
+
+    # Check status
+    docker compose ps
+
+    # Monitor resources
+    docker stats
+    ```
+
+## Troubleshooting
+
+### Common Issues
+
+01. Ollama Connection Failed
+
+    Check Ollama is running: curl <http://ollama:11434/api/tags>
+    Verify network connectivity
+    Check Ollama logs: docker compose logs ollama
+
+02. Memory Issues
+
+    Verify server meets minimum requirements
+    Check Docker resource limits
+    Monitor memory usage: docker stats
+
+03. Data Persistence
+
+    Check volume permissions
+    Verify mount points
+    Ensure sufficient disk space
+
+### Getting Help
+
+    Check the Issues page
+    Submit detailed bug reports with logs
+    Join our Discussions
+
+## Contributing
+
+Contributions are welcome! Please read our Contributing Guidelines before submitting pull requests.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
