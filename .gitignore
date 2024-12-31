@@ -66,12 +66,6 @@ coverage.xml
 coverage/
 htmlcov/
 
-# Deployment specific
-deploy/config/local_settings.sh
-deploy/logs/*
-deploy/*.log
-deploy/test/results/*
-
 # Temp files
 *.swp
 *.swo
